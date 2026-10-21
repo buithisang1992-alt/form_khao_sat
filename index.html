@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Biểu Mẫu Khảo Sát & Thu Thập Dữ Liệu</title>
+  <meta name="description" content="Biểu mẫu thu thập thông tin khách hàng, chữ ký số và hình ảnh đồng bộ trực tiếp với Google AppSheet API.">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Background Decorations -->
+  <div class="bg-shape shape-1"></div>
+  <div class="bg-shape shape-2"></div>
+  <div class="bg-shape shape-3"></div>
+
+  <div class="container">
+    <!-- Top Action Bar -->
+    <header class="app-header">
+      <div class="brand-badge">
+        <span class="live-pulse"></span>
+        <span>AppSheet Connected</span>
+      </div>
+      <div class="header-actions">
+        <button type="button" id="btnOpenConfig" class="btn-secondary-outline" title="Cấu hình Google AppSheet API">
+          <i class="fa-solid fa-sliders"></i>
+          <span>Cấu hình API</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Form Card -->
+    <main class="form-card">
+      <div class="form-header">
+        <div class="header-icon-wrap">
+          <i class="fa-solid fa-file-signature"></i>
+        </div>
+        <h1 class="form-title">PHIẾU THU THẬP THÔNG TIN</h1>
+        <p class="form-subtitle">Vui lòng điền đầy đủ các thông tin bên dưới để gửi dữ liệu tự động vào hệ thống AppSheet.</p>
+      </div>
+
+      <form id="surveyForm" novalidate>
+        <!-- Auto Generated System Info -->
+        <div class="form-section-title">
+          <i class="fa-solid fa-shield-halved"></i>
+          <span>Thông Tin Hệ Thống</span>
+        </div>
+        
+        <div class="form-row grid-2">
+          <!-- Field: ID -->
+          <div class="form-group">
+            <label for="fieldId" class="form-label">
+              Mã Bản Ghi (ID) <span class="badge-auto">Tự động</span>
+            </label>
+            <div class="input-wrapper readonly-wrapper">
+              <i class="fa-solid fa-hashtag input-icon"></i>
+              <input type="text" id="fieldId" name="ID" class="form-control" readonly required>
+              <button type="button" id="btnRegenId" class="btn-icon-inside" title="Tạo lại mã ID mới">
+                <i class="fa-solid fa-arrows-rotate"></i>
+              </button>
+            </div>
+            <span class="helper-text">Khóa chính duy nhất cho dòng dữ liệu trên AppSheet.</span>
+          </div>
+
+          <!-- Field: Thoi_gian -->
+          <div class="form-group">
+            <label for="fieldThoiGian" class="form-label">
+              Thời Gian Tạo (Thoi_gian) <span class="badge-auto">Thời gian thực</span>
+            </label>
+            <div class="input-wrapper readonly-wrapper">
+              <i class="fa-solid fa-calendar-day input-icon"></i>
+              <input type="text" id="fieldThoiGian" name="Thoi_gian" class="form-control" readonly required>
+              <button type="button" id="btnRefreshTime" class="btn-icon-inside" title="Cập nhật giờ hiện tại">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+              </button>
+            </div>
+            <span class="helper-text">Thời điểm ghi nhận phản hồi (YYYY-MM-DD HH:mm:ss).</span>
+          </div>
+        </div>
+
+        <!-- Personal & Service Information -->
+        <div class="form-section-title">
+          <i class="fa-solid fa-user-check"></i>
+          <span>Thông Tin Khách Hàng & Dịch Vụ</span>
+        </div>
+
+        <div class="form-row grid-2">
+          <!-- Field: Ho_va_ten -->
+          <div class="form-group">
+            <label for="fieldHoVaTen" class="form-label required">Họ Và Tên (Ho_va_ten)</label>
+            <div class="input-wrapper">
+              <i class="fa-solid fa-user input-icon"></i>
+              <input type="text" id="fieldHoVaTen" name="Ho_va_ten" class="form-control" placeholder="Ví dụ: Nguyễn Văn An" required>
+            </div>
+            <div class="error-msg" id="errorHoVaTen">Vui lòng nhập đầy đủ họ và tên.</div>
+          </div>
+
+          <!-- Field: So_dien_thoai -->
+          <div class="form-group">
+            <label for="fieldSoDienThoai" class="form-label required">Số Điện Thoại (So_dien_thoai)</label>
+            <div class="input-wrapper">
+              <i class="fa-solid fa-phone input-icon"></i>
+              <input type="tel" id="fieldSoDienThoai" name="So_dien_thoai" class="form-control" placeholder="Ví dụ: 0912345678" required>
+            </div>
+            <div class="error-msg" id="errorSoDienThoai">Số điện thoại không hợp lệ (cần 10 số di động VN).</div>
+          </div>
+        </div>
+
+        <div class="form-row grid-2">
+          <!-- Field: Email -->
+          <div class="form-group">
+            <label for="fieldEmail" class="form-label required">Địa Chỉ Email (Email)</label>
+            <div class="input-wrapper">
+              <i class="fa-solid fa-envelope input-icon"></i>
+              <input type="email" id="fieldEmail" name="Email" class="form-control" placeholder="example@domain.com" required>
+            </div>
+            <div class="error-msg" id="errorEmail">Địa chỉ email chưa đúng định dạng.</div>
+          </div>
+
+          <!-- Field: Nha_mang -->
+          <div class="form-group">
+            <label for="fieldNhaMang" class="form-label required">Nhà Mạng (Nha_mang)</label>
+            <div class="input-wrapper">
+              <i class="fa-solid fa-tower-cell input-icon"></i>
+              <select id="fieldNhaMang" name="Nha_mang" class="form-control select-custom" required>
+                <option value="" disabled selected>-- Chọn nhà mạng cung cấp --</option>
+                <option value="Viettel">Viettel</option>
+                <option value="Vinaphone">Vinaphone (VNPT)</option>
+                <option value="Mobifone">Mobifone</option>
+                <option value="Vietnamobile">Vietnamobile</option>
+                <option value="Wintel">Wintel</option>
+                <option value="FPT">FPT Telecom</option>
+                <option value="Khac">Nhà mạng khác</option>
+              </select>
+            </div>
+            <div class="error-msg" id="errorNhaMang">Vui lòng chọn một nhà mạng.</div>
+          </div>
+        </div>
+
+        <!-- Field: San_pham -->
+        <div class="form-row">
+          <div class="form-group full-width">
+            <label for="fieldSanPham" class="form-label required">Sản Phẩm / Dịch Vụ Khảo Sát (San_pham)</label>
+            <div class="input-wrapper">
+              <i class="fa-solid fa-box-open input-icon"></i>
+              <input type="text" id="fieldSanPham" name="San_pham" class="form-control" placeholder="Ví dụ: Gói Cước 5G Doanh Nghiệp, Sim Số Đẹp, Gói Cáp Quang..." required>
+            </div>
+            <div class="error-msg" id="errorSanPham">Vui lòng nhập tên sản phẩm hoặc dịch vụ.</div>
+          </div>
+        </div>
+
+        <!-- Media & Signature Section -->
+        <div class="form-section-title">
+          <i class="fa-solid fa-signature"></i>
+          <span>Xác Thực: Hình Ảnh & Chữ Ký Số</span>
+        </div>
+
+        <div class="form-row grid-2">
+          <!-- Field: Hinh_anh -->
+          <div class="form-group media-group">
+            <label class="form-label required">
+              Hình Ảnh Xác Thực (Hinh_anh)
+            </label>
+            <div class="drop-zone" id="imageDropZone">
+              <input type="file" id="fieldHinhAnhInput" accept="image/*" class="file-hidden-input">
+              <div class="drop-zone-prompt" id="dropZonePrompt">
+                <div class="drop-icon"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+                <div class="drop-text">Kéo thả ảnh hoặc <span class="highlight">Chọn ảnh</span></div>
+                <div class="drop-hint">Hỗ trợ JPG, PNG, WEBP (Tự động nén & chuyển Base64)</div>
+              </div>
+              <div class="preview-container hidden" id="imagePreviewContainer">
+                <img id="imagePreview" alt="Xem trước ảnh đính kèm" class="image-preview">
+                <div class="preview-overlay">
+                  <span id="imageMetaInfo" class="meta-badge">0 KB</span>
+                  <button type="button" id="btnRemoveImage" class="btn-circle-danger" title="Xóa hình ảnh này">
+                    <i class="fa-solid fa-trash-can"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <!-- Hidden input to store base64 data for form submit -->
+            <input type="hidden" id="fieldHinhAnhBase64" name="Hinh_anh">
+            <div class="error-msg" id="errorHinhAnh">Vui lòng tải lên 1 hình ảnh chứng thực.</div>
+          </div>
+
+          <!-- Field: Chu_ky -->
+          <div class="form-group media-group">
+            <div class="signature-header">
+              <label class="form-label required">Chữ Ký Điện Tử (Chu_ky)</label>
+              <button type="button" id="btnClearSignature" class="btn-link-action" title="Xóa để ký lại">
+                <i class="fa-solid fa-rotate-left"></i> Xóa ký lại
+              </button>
+            </div>
+            <div class="signature-pad-wrapper" id="sigPadWrapper">
+              <canvas id="signatureCanvas" class="signature-canvas"></canvas>
+              <div class="signature-placeholder" id="sigPlaceholder">
+                <i class="fa-solid fa-pen-nib"></i>
+                <span>Dùng chuột hoặc ngón tay để ký vào đây</span>
+              </div>
+            </div>
+            <!-- Hidden input to store base64 signature for form submit -->
+            <input type="hidden" id="fieldChuKyBase64" name="Chu_ky">
+            <div class="error-msg" id="errorChuKy">Vui lòng ký tên xác nhận vào khung trên.</div>
+          </div>
+        </div>
+
+        <!-- Form Submit Button -->
+        <div class="form-actions">
+          <button type="button" id="btnResetForm" class="btn-secondary">
+            <i class="fa-solid fa-arrow-rotate-left"></i> Làm mới
+          </button>
+          <button type="submit" id="btnSubmitForm" class="btn-primary">
+            <span class="btn-text">
+              <i class="fa-solid fa-paper-plane"></i> Gửi Dữ Liệu Lên AppSheet
+            </span>
+            <span class="btn-loader hidden">
+              <i class="fa-solid fa-circle-notch fa-spin"></i> Đang đồng bộ...
+            </span>
+          </button>
+        </div>
+      </form>
+    </main>
+  </div>
+
+  <!-- Modal: API Settings Configuration -->
+  <div class="modal-backdrop hidden" id="configModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <i class="fa-brands fa-google"></i>
+          <h3>Cấu Hình Google AppSheet API</h3>
+        </div>
+        <button type="button" id="btnCloseConfigModal" class="btn-modal-close">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <p class="modal-desc">
+          Nhập thông tin kết nối từ AppSheet của bạn (<strong>Manage &gt; Integrations &gt; External API</strong>).
+        </p>
+
+        <div class="form-group">
+          <label for="cfgAppId" class="form-label required">App ID (Mã ứng dụng)</label>
+          <div class="input-wrapper">
+            <i class="fa-solid fa-id-badge input-icon"></i>
+            <input type="text" id="cfgAppId" class="form-control" placeholder="0e018833-2c30-4fe0-b5a0-01de0ed0352c">
+          </div>
+          <span class="helper-text">Mã định danh AppSheet của bạn.</span>
+        </div>
+
+        <div class="form-group">
+          <label for="cfgTableName" class="form-label required">Table Name (Tên bảng dữ liệu)</label>
+          <div class="input-wrapper">
+            <i class="fa-solid fa-table input-icon"></i>
+            <input type="text" id="cfgTableName" class="form-control" placeholder="Du lieu" value="Du lieu">
+          </div>
+          <span class="helper-text">Tên bảng dữ liệu trong AppSheet (khớp chính xác tên bảng hoặc tên Sheet).</span>
+        </div>
+
+        <div class="form-group">
+          <label for="cfgAccessKey" class="form-label required">Application Access Key</label>
+          <div class="input-wrapper">
+            <i class="fa-solid fa-key input-icon"></i>
+            <input type="password" id="cfgAccessKey" class="form-control" placeholder="V2-QiAE6-IblOJ-pV3Qo-WziBF-bwrlO-oybzd-NucjK-yjL2j">
+            <button type="button" id="btnToggleKeyVis" class="btn-icon-inside" title="Hiện/ẩn khóa">
+              <i class="fa-solid fa-eye" id="keyVisIcon"></i>
+            </button>
+          </div>
+          <span class="helper-text">Khóa API từ mục Manage &gt; Integrations &gt; External API.</span>
+        </div>
+
+        <!-- Optional: Proxy / Google Apps Script URL for CORS prevention -->
+        <div class="form-group">
+          <label for="cfgCustomEndpoint" class="form-label">
+            Custom Webhook / Google Apps Script Proxy URL <span class="badge-optional">Khuyên dùng nếu gặp lỗi CORS</span>
+          </label>
+          <div class="input-wrapper">
+            <i class="fa-solid fa-link input-icon"></i>
+            <input type="url" id="cfgCustomEndpoint" class="form-control" placeholder="https://script.google.com/macros/s/.../exec (Để trống nếu gọi trực tiếp AppSheet API)">
+          </div>
+          <span class="helper-text">
+            Trình duyệt có thể chặn CORS khi gọi thẳng api.appsheet.com từ localhost/web. Bạn có thể dùng Webhook proxy hoặc App Script trung gian để vượt CORS mượt mà 100%.
+          </span>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" id="btnSaveConfig" class="btn-primary">
+          <i class="fa-solid fa-floppy-disk"></i> Lưu Cấu Hình
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container for Notifications -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
