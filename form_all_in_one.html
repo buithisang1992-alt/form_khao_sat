@@ -1,0 +1,1299 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Biểu Mẫu Khảo Sát & Thu Thập Dữ Liệu - AppSheet</title>
+  <meta name="description" content="Biểu mẫu thu thập thông tin khách hàng, chữ ký số và hình ảnh đồng bộ trực tiếp với Google AppSheet API.">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <style>
+    /* ====================================================================
+       DESIGN SYSTEM & VARIABLES
+       ==================================================================== */
+    :root {
+      --font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --primary-gradient: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+      --primary-hover-gradient: linear-gradient(135deg, #4338ca 0%, #6d28d9 100%);
+      --accent-cyan: #06b6d4;
+      --bg-deep: #090d16;
+      --card-bg: rgba(17, 24, 39, 0.85);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --input-bg: rgba(15, 23, 42, 0.65);
+      --input-border: rgba(255, 255, 255, 0.12);
+      --input-focus-border: #6366f1;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --color-success: #10b981;
+      --color-danger: #f43f5e;
+      --color-warning: #f59e0b;
+      --color-info: #3b82f6;
+      --shadow-lg: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
+      --shadow-glow: 0 0 25px rgba(99, 102, 241, 0.25);
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 20px;
+      --radius-full: 9999px;
+      --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-family);
+      background-color: var(--bg-deep);
+      color: var(--text-main);
+      min-height: 100vh;
+      line-height: 1.6;
+      position: relative;
+      overflow-x: hidden;
+      padding: 30px 16px 80px 16px;
+    }
+
+    .bg-shape {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(120px);
+      z-index: -1;
+      pointer-events: none;
+      opacity: 0.45;
+    }
+    .shape-1 {
+      width: 450px;
+      height: 450px;
+      background: radial-gradient(circle, #4f46e5 0%, transparent 70%);
+      top: -100px;
+      left: -100px;
+    }
+    .shape-2 {
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, #7c3aed 0%, transparent 70%);
+      bottom: -150px;
+      right: -100px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .app-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .brand-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--card-border);
+      backdrop-filter: blur(8px);
+      padding: 6px 14px;
+      border-radius: var(--radius-full);
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #c7d2fe;
+    }
+
+    .live-pulse {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--color-success);
+      box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+      70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+
+    .form-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-lg);
+      padding: 40px;
+      box-shadow: var(--shadow-lg), var(--shadow-glow);
+    }
+
+    .form-header {
+      text-align: center;
+      margin-bottom: 36px;
+    }
+
+    .header-icon-wrap {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 16px auto;
+      border-radius: 18px;
+      background: var(--primary-gradient);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      color: #fff;
+      box-shadow: 0 10px 20px -5px rgba(99, 102, 241, 0.5);
+    }
+
+    .form-title {
+      font-size: 1.85rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #ffffff 30%, #c7d2fe 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+    }
+
+    .form-subtitle {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      max-width: 580px;
+      margin: 0 auto;
+    }
+
+    .form-section-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #818cf8;
+      margin: 32px 0 18px 0;
+      padding-bottom: 8px;
+      border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+    }
+
+    .form-row {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      position: relative;
+    }
+
+    .full-width {
+      width: 100%;
+    }
+
+    .form-label {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .form-label.required::after {
+      content: "*";
+      color: var(--color-danger);
+      font-size: 1.1rem;
+    }
+
+    .badge-auto {
+      background: rgba(99, 102, 241, 0.15);
+      color: #a5b4fc;
+      font-size: 0.72rem;
+      padding: 2px 8px;
+      border-radius: var(--radius-full);
+      font-weight: 600;
+      border: 1px solid rgba(99, 102, 241, 0.25);
+    }
+
+    .input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+      border-radius: var(--radius-md);
+      background: var(--input-bg);
+      border: 1.5px solid var(--input-border);
+      transition: var(--transition);
+    }
+
+    .input-wrapper:hover {
+      border-color: rgba(255, 255, 255, 0.22);
+    }
+
+    .input-wrapper:focus-within {
+      border-color: var(--input-focus-border);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
+      background: rgba(15, 23, 42, 0.9);
+    }
+
+    .input-icon {
+      position: absolute;
+      left: 14px;
+      color: var(--text-dim);
+      font-size: 0.95rem;
+      pointer-events: none;
+    }
+
+    .input-wrapper:focus-within .input-icon {
+      color: #818cf8;
+    }
+
+    .form-control {
+      width: 100%;
+      background: transparent;
+      border: none;
+      outline: none;
+      padding: 12px 14px 12px 42px;
+      font-size: 0.92rem;
+      font-family: inherit;
+      color: var(--text-main);
+      border-radius: var(--radius-md);
+    }
+
+    .form-control::placeholder {
+      color: var(--text-dim);
+    }
+
+    .readonly-wrapper {
+      background: rgba(255, 255, 255, 0.03);
+      border-color: rgba(255, 255, 255, 0.06);
+    }
+
+    .readonly-wrapper .form-control {
+      color: #cbd5e1;
+      cursor: default;
+    }
+
+    .btn-icon-inside {
+      background: transparent;
+      border: none;
+      color: var(--text-dim);
+      padding: 0 14px;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .btn-icon-inside:hover {
+      color: #818cf8;
+      transform: rotate(45deg);
+    }
+
+    .select-custom {
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      background-size: 16px;
+      padding-right: 38px;
+    }
+
+    .select-custom option {
+      background-color: #1e293b;
+      color: var(--text-main);
+    }
+
+    .helper-text {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+    }
+
+    .error-msg {
+      font-size: 0.78rem;
+      color: var(--color-danger);
+      display: none;
+    }
+
+    .form-group.has-error .error-msg {
+      display: block;
+    }
+
+    .form-group.has-error .input-wrapper {
+      border-color: var(--color-danger);
+      box-shadow: 0 0 0 3px rgba(244, 63, 94, 0.2);
+    }
+
+    /* DROP ZONE HÌNH ẢNH */
+    .drop-zone {
+      position: relative;
+      border: 2px dashed rgba(255, 255, 255, 0.15);
+      border-radius: var(--radius-md);
+      background: var(--input-bg);
+      min-height: 180px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      cursor: pointer;
+      transition: var(--transition);
+      overflow: hidden;
+    }
+
+    .drop-zone:hover, .drop-zone.dragover {
+      border-color: #6366f1;
+      background: rgba(99, 102, 241, 0.08);
+    }
+
+    .file-hidden-input {
+      display: none;
+    }
+
+    .drop-zone-prompt {
+      padding: 20px;
+    }
+
+    .drop-icon {
+      font-size: 2.2rem;
+      color: #818cf8;
+      margin-bottom: 8px;
+    }
+
+    .drop-text {
+      font-size: 0.9rem;
+      color: var(--text-main);
+      font-weight: 500;
+    }
+
+    .drop-text .highlight {
+      color: #818cf8;
+      text-decoration: underline;
+    }
+
+    .preview-container {
+      width: 100%;
+      height: 180px;
+      position: relative;
+      background: #000;
+    }
+
+    .image-preview {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+
+    .preview-overlay {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      left: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .meta-badge {
+      background: rgba(0, 0, 0, 0.75);
+      color: #e2e8f0;
+      font-size: 0.72rem;
+      padding: 3px 8px;
+      border-radius: var(--radius-sm);
+    }
+
+    .btn-circle-danger {
+      background: var(--color-danger);
+      border: none;
+      color: #fff;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    /* SIGNATURE PAD */
+    .signature-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .btn-link-action {
+      background: transparent;
+      border: none;
+      color: #a5b4fc;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .signature-pad-wrapper {
+      position: relative;
+      background: #ffffff;
+      border-radius: var(--radius-md);
+      height: 180px;
+      border: 2px dashed rgba(255, 255, 255, 0.3);
+      overflow: hidden;
+      touch-action: none;
+    }
+
+    .signature-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      cursor: crosshair;
+    }
+
+    .signature-placeholder {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      color: #94a3b8;
+      font-size: 0.85rem;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .signature-pad-wrapper.has-signed .signature-placeholder {
+      opacity: 0;
+    }
+
+    /* BUTTONS */
+    .form-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 16px;
+      margin-top: 36px;
+      padding-top: 24px;
+      border-top: 1px solid var(--card-border);
+    }
+
+    .btn-primary {
+      background: var(--primary-gradient);
+      color: #fff;
+      border: none;
+      padding: 13px 28px;
+      border-radius: var(--radius-md);
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+      transition: var(--transition);
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-hover-gradient);
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.08);
+      color: #e2e8f0;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 13px 24px;
+      border-radius: var(--radius-md);
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn-secondary-outline {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      color: #cbd5e1;
+      padding: 8px 16px;
+      border-radius: var(--radius-full);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* MODAL */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(8px);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-card {
+      background: #111827;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: var(--radius-lg);
+      max-width: 580px;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    .modal-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .btn-modal-close {
+      background: transparent;
+      border: none;
+      color: var(--text-dim);
+      font-size: 1.2rem;
+      cursor: pointer;
+    }
+
+    .modal-body {
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      max-height: 70vh;
+      overflow-y: auto;
+    }
+
+    .modal-footer {
+      padding: 16px 24px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      justify-content: flex-end;
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    /* TOAST */
+    .toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 2000;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-width: 400px;
+      width: calc(100% - 48px);
+    }
+
+    .toast {
+      background: rgba(17, 24, 39, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(12px);
+      padding: 14px 18px;
+      border-radius: var(--radius-md);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .toast.toast-success { border-left: 4px solid var(--color-success); }
+    .toast.toast-error { border-left: 4px solid var(--color-danger); }
+    .toast.toast-warning { border-left: 4px solid var(--color-warning); }
+    .toast.toast-info { border-left: 4px solid var(--color-info); }
+
+    .toast-content { flex: 1; }
+    .toast-title { font-size: 0.9rem; font-weight: 700; color: #fff; margin-bottom: 2px; }
+    .toast-message { font-size: 0.82rem; color: var(--text-muted); }
+    .toast-close { background: transparent; border: none; color: var(--text-dim); cursor: pointer; }
+
+    .hidden { display: none !important; }
+
+    @media (max-width: 768px) {
+      .grid-2 { grid-template-columns: 1fr; }
+      .form-actions { flex-direction: column-reverse; }
+      .form-actions button { width: 100%; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-shape shape-1"></div>
+  <div class="bg-shape shape-2"></div>
+
+  <div class="container">
+    <header class="app-header">
+      <div class="brand-badge">
+        <span class="live-pulse"></span>
+        <span>Google AppSheet API: Connected</span>
+      </div>
+      <div class="header-actions">
+        <button type="button" id="btnOpenConfig" class="btn-secondary-outline">
+          <i class="fa-solid fa-sliders"></i>
+          <span>Cấu hình API</span>
+        </button>
+      </div>
+    </header>
+
+    <main class="form-card">
+      <div class="form-header">
+        <div class="header-icon-wrap">
+          <i class="fa-solid fa-file-signature"></i>
+        </div>
+        <h1 class="form-title">BIỂU MẪU KHẢO SÁT & THU THẬP THÔNG TIN</h1>
+        <p class="form-subtitle">Dữ liệu sẽ được đồng bộ trực tiếp vào ứng dụng Google AppSheet (Bảng: <strong>Du lieu</strong>).</p>
+      </div>
+
+      <form id="surveyForm" novalidate>
+        <!-- 1. Hệ thống -->
+        <div class="form-section-title">
+          <i class="fa-solid fa-shield-halved"></i>
+          <span>Thông Tin Hệ Thống</span>
+        </div>
+        
+        <div class="form-row grid-2">
+          <!-- ID -->
+          <div class="form-group">
+            <label for="fieldId" class="form-label">
+              Mã Bản Ghi (ID) <span class="badge-auto">Tự động sinh</span>
+            </label>
+            <div class="input-wrapper readonly-wrapper">
+              <i class="fa-solid fa-hashtag input-icon"></i>
+              <input type="text" id="fieldId" name="ID" class="form-control" readonly required>
+              <button type="button" id="btnRegenId" class="btn-icon-inside" title="Tạo lại mã ID mới">
+                <i class="fa-solid fa-arrows-rotate"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Thoi_gian -->
+          <div class="form-group">
+            <label for="fieldThoiGian" class="form-label">
+              Thời Gian (Thoi_gian) <span class="badge-auto">Thời gian thực</span>
+            </label>
+            <div class="input-wrapper readonly-wrapper">
+              <i class="fa-solid fa-clock input-icon"></i>
+              <input type="text" id="fieldThoiGian" name="Thoi_gian" class="form-control" readonly required>
+              <button type="button" id="btnRefreshTime" class="btn-icon-inside" title="Cập nhật giờ hiện tại">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Thông tin khách hàng & Dịch vụ -->
+        <div class="form-section-title">
+          <i class="fa-solid fa-user-check"></i>
+          <span>Thông Tin Khách Hàng & Dịch Vụ</span>
+        </div>
+
+        <div class="form-row grid-2">
+          <!-- Ho_va_ten -->
+          <div class="form-group">
+            <label for="fieldHoVaTen" class="form-label required">Họ Và Tên (Ho_va_ten)</label>
+            <div class="input-wrapper">
+              <i class="fa-solid fa-user input-icon"></i>
+              <input type="text" id="fieldHoVaTen" name="Ho_va_ten" class="form-control" placeholder="Nguyễn Văn An" required>
+            </div>
+            <div class="error-msg" id="errorHoVaTen">Vui lòng nhập họ và tên.</div>
+          </div>
+
+          <!-- So_dien_thoai -->
+          <div class="form-group">
+            <label for="fieldSoDienThoai" class="form-label required">Số Điện Thoại (So_dien_thoai)</label>
+            <div class="input-wrapper">
+              <i class="fa-solid fa-phone input-icon"></i>
+              <input type="tel" id="fieldSoDienThoai" name="So_dien_thoai" class="form-control" placeholder="0912345678" required>
+            </div>
+            <div class="error-msg" id="errorSoDienThoai">Số điện thoại chưa hợp lệ (cần 10 số).</div>
+          </div>
+        </div>
+
+        <div class="form-row grid-2">
+          <!-- Email -->
+          <div class="form-group">
+            <label for="fieldEmail" class="form-label required">Email (Email)</label>
+            <div class="input-wrapper">
+              <i class="fa-solid fa-envelope input-icon"></i>
+              <input type="email" id="fieldEmail" name="Email" class="form-control" placeholder="an.nguyen@example.com" required>
+            </div>
+            <div class="error-msg" id="errorEmail">Địa chỉ email chưa đúng định dạng.</div>
+          </div>
+
+          <!-- Nha_mang -->
+          <div class="form-group">
+            <label for="fieldNhaMang" class="form-label required">Nhà Mạng (Nha_mang)</label>
+            <div class="input-wrapper">
+              <i class="fa-solid fa-tower-cell input-icon"></i>
+              <select id="fieldNhaMang" name="Nha_mang" class="form-control select-custom" required>
+                <option value="" disabled selected>-- Chọn nhà mạng --</option>
+                <option value="Viettel">Viettel</option>
+                <option value="Vinaphone">Vinaphone (VNPT)</option>
+                <option value="Mobifone">Mobifone</option>
+                <option value="Vietnamobile">Vietnamobile</option>
+                <option value="Wintel">Wintel</option>
+                <option value="FPT">FPT Telecom</option>
+                <option value="Khac">Nhà mạng khác</option>
+              </select>
+            </div>
+            <div class="error-msg" id="errorNhaMang">Vui lòng chọn một nhà mạng.</div>
+          </div>
+        </div>
+
+        <!-- San_pham -->
+        <div class="form-row">
+          <div class="form-group full-width">
+            <label for="fieldSanPham" class="form-label required">Sản Phẩm (San_pham)</label>
+            <div class="input-wrapper">
+              <i class="fa-solid fa-box-open input-icon"></i>
+              <input type="text" id="fieldSanPham" name="San_pham" class="form-control" placeholder="Ví dụ: Gói Cước 5G Doanh Nghiệp, Sim Số Đẹp..." required>
+            </div>
+            <div class="error-msg" id="errorSanPham">Vui lòng nhập tên sản phẩm / gói cước.</div>
+          </div>
+        </div>
+
+        <!-- 3. Chữ ký & Hình ảnh -->
+        <div class="form-section-title">
+          <i class="fa-solid fa-signature"></i>
+          <span>Xác Thực: Hình Ảnh & Chữ Ký Số</span>
+        </div>
+
+        <div class="form-row grid-2">
+          <!-- Hinh_anh -->
+          <div class="form-group">
+            <label class="form-label required">Hình Ảnh (Hinh_anh)</label>
+            <div class="drop-zone" id="imageDropZone">
+              <input type="file" id="fieldHinhAnhInput" accept="image/*" class="file-hidden-input">
+              <div class="drop-zone-prompt" id="dropZonePrompt">
+                <div class="drop-icon"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+                <div class="drop-text">Kéo thả ảnh hoặc <span class="highlight">Chọn ảnh</span></div>
+                <div class="helper-text">Tự động nén & chuyển Base64</div>
+              </div>
+              <div class="preview-container hidden" id="imagePreviewContainer">
+                <img id="imagePreview" alt="Preview" class="image-preview">
+                <div class="preview-overlay">
+                  <span id="imageMetaInfo" class="meta-badge">0 KB</span>
+                  <button type="button" id="btnRemoveImage" class="btn-circle-danger" title="Xóa ảnh">
+                    <i class="fa-solid fa-trash-can"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <input type="hidden" id="fieldHinhAnhBase64" name="Hinh_anh">
+            <div class="error-msg" id="errorHinhAnh">Vui lòng tải lên 1 hình ảnh xác thực.</div>
+          </div>
+
+          <!-- Chu_ky -->
+          <div class="form-group">
+            <div class="signature-header">
+              <label class="form-label required">Chữ Ký (Chu_ky)</label>
+              <button type="button" id="btnClearSignature" class="btn-link-action" title="Xóa để ký lại">
+                <i class="fa-solid fa-rotate-left"></i> Xóa ký lại
+              </button>
+            </div>
+            <div class="signature-pad-wrapper" id="sigPadWrapper">
+              <canvas id="signatureCanvas" class="signature-canvas"></canvas>
+              <div class="signature-placeholder" id="sigPlaceholder">
+                <i class="fa-solid fa-pen-nib"></i>
+                <span>Dùng chuột hoặc vuốt tay để ký tên vào đây</span>
+              </div>
+            </div>
+            <input type="hidden" id="fieldChuKyBase64" name="Chu_ky">
+            <div class="error-msg" id="errorChuKy">Vui lòng ký tên xác nhận vào khung trên.</div>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" id="btnResetForm" class="btn-secondary">
+            <i class="fa-solid fa-arrow-rotate-left"></i> Làm mới
+          </button>
+          <button type="submit" id="btnSubmitForm" class="btn-primary">
+            <span class="btn-text">
+              <i class="fa-solid fa-paper-plane"></i> Gửi Dữ Liệu Lên AppSheet
+            </span>
+            <span class="btn-loader hidden">
+              <i class="fa-solid fa-circle-notch fa-spin"></i> Đang gửi lên AppSheet...
+            </span>
+          </button>
+        </div>
+      </form>
+    </main>
+  </div>
+
+  <!-- Modal cấu hình API -->
+  <div class="modal-backdrop hidden" id="configModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Cấu Hình Google AppSheet API</h3>
+        <button type="button" id="btnCloseConfigModal" class="btn-modal-close">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">YOUR_APP_ID</label>
+          <div class="input-wrapper">
+            <input type="text" id="cfgAppId" class="form-control" value="0e018833-2c30-4fe0-b5a0-01de0ed0352c">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">table (Tên bảng trong AppSheet)</label>
+          <div class="input-wrapper">
+            <input type="text" id="cfgTableName" class="form-control" value="Du lieu">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">YOUR_APPSHEET_ACCESS_KEY</label>
+          <div class="input-wrapper">
+            <input type="text" id="cfgAccessKey" class="form-control" value="V2-QiAE6-IblOJ-pV3Qo-WziBF-bwrlO-oybzd-NucjK-yjL2j">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Google Apps Script Web App URL (Để tránh lỗi CORS nếu gọi từ web)</label>
+          <div class="input-wrapper">
+            <input type="url" id="cfgCustomEndpoint" class="form-control" placeholder="https://script.google.com/macros/s/.../exec">
+          </div>
+          <span class="helper-text">Nếu dùng Webhook Google Apps Script, dán URL triển khai Web App vào đây.</span>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" id="btnSaveConfig" class="btn-primary">
+          <i class="fa-solid fa-floppy-disk"></i> Lưu Cấu Hình
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- ====================================================================
+       JAVASCRIPT LOGIC
+       ==================================================================== -->
+  <script>
+    // CẤU HÌNH APPSHEET CHUẨN CỦA BẠN
+    var YOUR_APPSHEET_ACCESS_KEY = "V2-QiAE6-IblOJ-pV3Qo-WziBF-bwrlO-oybzd-NucjK-yjL2j";
+    var YOUR_APP_ID = "0e018833-2c30-4fe0-b5a0-01de0ed0352c";
+    var table = "Du lieu";
+
+    // Khởi tạo trạng thái
+    let isDrawing = false;
+    let hasSigned = false;
+    let signatureCtx = null;
+    let lastX = 0;
+    let lastY = 0;
+
+    // DOM Elements
+    const form = document.getElementById('surveyForm');
+    const fieldId = document.getElementById('fieldId');
+    const fieldThoiGian = document.getElementById('fieldThoiGian');
+    const fieldHoVaTen = document.getElementById('fieldHoVaTen');
+    const fieldNhaMang = document.getElementById('fieldNhaMang');
+    const fieldSanPham = document.getElementById('fieldSanPham');
+    const fieldSoDienThoai = document.getElementById('fieldSoDienThoai');
+    const fieldEmail = document.getElementById('fieldEmail');
+    const fieldChuKyBase64 = document.getElementById('fieldChuKyBase64');
+    const fieldHinhAnhBase64 = document.getElementById('fieldHinhAnhBase64');
+    const signatureCanvas = document.getElementById('signatureCanvas');
+    const sigPadWrapper = document.getElementById('sigPadWrapper');
+    const btnClearSignature = document.getElementById('btnClearSignature');
+    const imageDropZone = document.getElementById('imageDropZone');
+    const fieldHinhAnhInput = document.getElementById('fieldHinhAnhInput');
+    const dropZonePrompt = document.getElementById('dropZonePrompt');
+    const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+    const imagePreview = document.getElementById('imagePreview');
+    const imageMetaInfo = document.getElementById('imageMetaInfo');
+    const btnRemoveImage = document.getElementById('btnRemoveImage');
+    const btnResetForm = document.getElementById('btnResetForm');
+    const btnSubmitForm = document.getElementById('btnSubmitForm');
+    const btnRegenId = document.getElementById('btnRegenId');
+    const btnRefreshTime = document.getElementById('btnRefreshTime');
+
+    // Config Modal
+    const configModal = document.getElementById('configModal');
+    const btnOpenConfig = document.getElementById('btnOpenConfig');
+    const btnCloseConfigModal = document.getElementById('btnCloseConfigModal');
+    const btnSaveConfig = document.getElementById('btnSaveConfig');
+    const cfgAppId = document.getElementById('cfgAppId');
+    const cfgTableName = document.getElementById('cfgTableName');
+    const cfgAccessKey = document.getElementById('cfgAccessKey');
+    const cfgCustomEndpoint = document.getElementById('cfgCustomEndpoint');
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initSystemFields();
+      initSignaturePad();
+      initImageUploader();
+      initConfigModal();
+      bindFormEvents();
+    });
+
+    // 1. Tự động sinh ID và thời gian
+    function generateId() {
+      const dateStr = new Date().toISOString().slice(2, 10).replace(/-/g, '');
+      const rand = Math.random().toString(36).substring(2, 7).toUpperCase();
+      return `KS-${dateStr}-${rand}`;
+    }
+
+    function getFormattedDateTime() {
+      const now = new Date();
+      const pad = (n) => String(n).padStart(2, '0');
+      return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+    }
+
+    function initSystemFields() {
+      fieldId.value = generateId();
+      fieldThoiGian.value = getFormattedDateTime();
+
+      btnRegenId.addEventListener('click', () => {
+        fieldId.value = generateId();
+        showToast('info', 'Mã ID', 'Đã tạo lại mã ID mới.');
+      });
+
+      btnRefreshTime.addEventListener('click', () => {
+        fieldThoiGian.value = getFormattedDateTime();
+        showToast('info', 'Thời gian', 'Đã cập nhật ngày giờ hiện tại.');
+      });
+    }
+
+    // 2. Chữ ký Canvas Pad
+    function initSignaturePad() {
+      signatureCtx = signatureCanvas.getContext('2d');
+
+      function resizeCanvas() {
+        const rect = sigPadWrapper.getBoundingClientRect();
+        const dpr = window.devicePixelRatio || 1;
+        let tempImg = hasSigned ? signatureCanvas.toDataURL() : null;
+
+        signatureCanvas.width = rect.width * dpr;
+        signatureCanvas.height = rect.height * dpr;
+        signatureCtx.scale(dpr, dpr);
+
+        signatureCtx.strokeStyle = '#0f172a';
+        signatureCtx.lineWidth = 2.5;
+        signatureCtx.lineCap = 'round';
+        signatureCtx.lineJoin = 'round';
+
+        if (tempImg) {
+          const img = new Image();
+          img.onload = () => signatureCtx.drawImage(img, 0, 0, rect.width, rect.height);
+          img.src = tempImg;
+        }
+      }
+
+      resizeCanvas();
+      window.addEventListener('resize', resizeCanvas);
+
+      function getCoords(e) {
+        const rect = signatureCanvas.getBoundingClientRect();
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        return { x: clientX - rect.left, y: clientY - rect.top };
+      }
+
+      function startDraw(e) {
+        isDrawing = true;
+        hasSigned = true;
+        sigPadWrapper.classList.add('has-signed');
+        clearFieldError('', sigPadWrapper.parentElement);
+        const pos = getCoords(e);
+        lastX = pos.x;
+        lastY = pos.y;
+        signatureCtx.beginPath();
+        signatureCtx.arc(lastX, lastY, 1.25, 0, Math.PI * 2);
+        signatureCtx.fillStyle = '#0f172a';
+        signatureCtx.fill();
+        signatureCtx.beginPath();
+        signatureCtx.moveTo(lastX, lastY);
+      }
+
+      function draw(e) {
+        if (!isDrawing) return;
+        const pos = getCoords(e);
+        signatureCtx.beginPath();
+        signatureCtx.moveTo(lastX, lastY);
+        signatureCtx.lineTo(pos.x, pos.y);
+        signatureCtx.stroke();
+        lastX = pos.x;
+        lastY = pos.y;
+      }
+
+      function stopDraw() {
+        if (!isDrawing) return;
+        isDrawing = false;
+        fieldChuKyBase64.value = signatureCanvas.toDataURL('image/png');
+      }
+
+      signatureCanvas.addEventListener('mousedown', startDraw);
+      signatureCanvas.addEventListener('mousemove', draw);
+      signatureCanvas.addEventListener('mouseup', stopDraw);
+      signatureCanvas.addEventListener('mouseleave', stopDraw);
+
+      signatureCanvas.addEventListener('touchstart', (e) => { e.preventDefault(); startDraw(e); }, { passive: false });
+      signatureCanvas.addEventListener('touchmove', (e) => { e.preventDefault(); draw(e); }, { passive: false });
+      signatureCanvas.addEventListener('touchend', (e) => { e.preventDefault(); stopDraw(); }, { passive: false });
+
+      btnClearSignature.addEventListener('click', () => {
+        const rect = sigPadWrapper.getBoundingClientRect();
+        signatureCtx.clearRect(0, 0, rect.width, rect.height);
+        hasSigned = false;
+        sigPadWrapper.classList.remove('has-signed');
+        fieldChuKyBase64.value = '';
+      });
+    }
+
+    // 3. Tải và nén ảnh
+    function initImageUploader() {
+      imageDropZone.addEventListener('click', () => fieldHinhAnhInput.click());
+
+      ['dragenter', 'dragover'].forEach(name => {
+        imageDropZone.addEventListener(name, (e) => { e.preventDefault(); imageDropZone.classList.add('dragover'); });
+      });
+
+      ['dragleave', 'drop'].forEach(name => {
+        imageDropZone.addEventListener(name, (e) => { e.preventDefault(); imageDropZone.classList.remove('dragover'); });
+      });
+
+      imageDropZone.addEventListener('drop', (e) => {
+        if (e.dataTransfer.files.length) handleImage(e.dataTransfer.files[0]);
+      });
+
+      fieldHinhAnhInput.addEventListener('change', (e) => {
+        if (e.target.files.length) handleImage(e.target.files[0]);
+      });
+
+      btnRemoveImage.addEventListener('click', (e) => {
+        e.stopPropagation();
+        fieldHinhAnhInput.value = '';
+        fieldHinhAnhBase64.value = '';
+        imagePreview.src = '';
+        dropZonePrompt.classList.remove('hidden');
+        imagePreviewContainer.classList.add('hidden');
+      });
+    }
+
+    function handleImage(file) {
+      if (!file.type.startsWith('image/')) {
+        showToast('error', 'Lỗi tệp', 'Vui lòng chọn file hình ảnh (JPG, PNG).');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.src = e.target.result;
+        img.onload = () => {
+          const maxDim = 1000;
+          let w = img.width, h = img.height;
+          if (w > h && w > maxDim) { h = Math.round((h * maxDim) / w); w = maxDim; }
+          else if (h > maxDim) { w = Math.round((w * maxDim) / h); h = maxDim; }
+
+          const cvs = document.createElement('canvas');
+          cvs.width = w; cvs.height = h;
+          const ctx = cvs.getContext('2d');
+          ctx.drawImage(img, 0, 0, w, h);
+
+          const compressed = cvs.toDataURL('image/jpeg', 0.8);
+          fieldHinhAnhBase64.value = compressed;
+          imagePreview.src = compressed;
+          imageMetaInfo.textContent = `${(Math.round((compressed.length * 3) / 4) / 1024).toFixed(1)} KB`;
+          dropZonePrompt.classList.add('hidden');
+          imagePreviewContainer.classList.remove('hidden');
+          clearFieldError('', imageDropZone.parentElement);
+        };
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // 4. Validation
+    function setFieldError(id, group) { group.classList.add('has-error'); }
+    function clearFieldError(id, group) { group.classList.remove('has-error'); }
+
+    function validateForm() {
+      let valid = true;
+      if (!fieldHoVaTen.value.trim()) { setFieldError('', fieldHoVaTen.closest('.form-group')); valid = false; }
+      if (!/^(0|\+84)[0-9]{9}$/.test(fieldSoDienThoai.value.trim().replace(/\s+/g, ''))) { setFieldError('', fieldSoDienThoai.closest('.form-group')); valid = false; }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(fieldEmail.value.trim())) { setFieldError('', fieldEmail.closest('.form-group')); valid = false; }
+      if (!fieldNhaMang.value) { setFieldError('', fieldNhaMang.closest('.form-group')); valid = false; }
+      if (!fieldSanPham.value.trim()) { setFieldError('', fieldSanPham.closest('.form-group')); valid = false; }
+      if (!fieldHinhAnhBase64.value) { setFieldError('', imageDropZone.closest('.form-group')); valid = false; }
+      if (!hasSigned || !fieldChuKyBase64.value) { setFieldError('', sigPadWrapper.closest('.form-group')); valid = false; }
+      return valid;
+    }
+
+    [fieldHoVaTen, fieldSoDienThoai, fieldEmail, fieldNhaMang, fieldSanPham].forEach(inp => {
+      inp.addEventListener('input', () => clearFieldError('', inp.closest('.form-group')));
+      inp.addEventListener('change', () => clearFieldError('', inp.closest('.form-group')));
+    });
+
+    // 5. Cấu hình Modal
+    function initConfigModal() {
+      cfgAppId.value = localStorage.getItem('appsheet_cfg_app_id') || YOUR_APP_ID;
+      cfgTableName.value = localStorage.getItem('appsheet_cfg_table_name') || table;
+      cfgAccessKey.value = localStorage.getItem('appsheet_cfg_access_key') || YOUR_APPSHEET_ACCESS_KEY;
+      cfgCustomEndpoint.value = localStorage.getItem('appsheet_cfg_custom_endpoint') || '';
+
+      btnOpenConfig.addEventListener('click', () => configModal.classList.remove('hidden'));
+      btnCloseConfigModal.addEventListener('click', () => configModal.classList.add('hidden'));
+      btnSaveConfig.addEventListener('click', () => {
+        localStorage.setItem('appsheet_cfg_app_id', cfgAppId.value.trim());
+        localStorage.setItem('appsheet_cfg_table_name', cfgTableName.value.trim());
+        localStorage.setItem('appsheet_cfg_access_key', cfgAccessKey.value.trim());
+        localStorage.setItem('appsheet_cfg_custom_endpoint', cfgCustomEndpoint.value.trim());
+        configModal.classList.add('hidden');
+        showToast('success', 'Đã lưu', 'Cấu hình AppSheet đã được lưu.');
+      });
+    }
+
+    // 6. PHƯƠNG THỨC APPSHEET API CHUẨN CỦA BẠN (addData)
+    function bindFormEvents() {
+      btnResetForm.addEventListener('click', () => {
+        if (confirm('Làm mới toàn bộ biểu mẫu?')) {
+          form.reset();
+          btnClearSignature.click();
+          btnRemoveImage.click();
+          initSystemFields();
+        }
+      });
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (!validateForm()) {
+          showToast('warning', 'Thiếu dữ liệu', 'Vui lòng điền đủ các trường bắt buộc và ký tên.');
+          return;
+        }
+
+        // Tạo mảng dữ liệu 9 trường
+        var Du_lieu = [
+          {
+            "ID": fieldId.value,
+            "Thoi_gian": fieldThoiGian.value,
+            "Ho_va_ten": fieldHoVaTen.value.trim(),
+            "Nha_mang": fieldNhaMang.value,
+            "San_pham": fieldSanPham.value.trim(),
+            "So_dien_thoai": fieldSoDienThoai.value.trim(),
+            "Chu_ky": fieldChuKyBase64.value,
+            "Hinh_anh": fieldHinhAnhBase64.value,
+            "Email": fieldEmail.value.trim()
+          }
+        ];
+
+        var curTable = localStorage.getItem('appsheet_cfg_table_name') || table;
+        await addData(Du_lieu, curTable);
+      });
+    }
+
+    /**
+     * Phương thức addData đúng chuẩn yêu cầu của bạn
+     */
+    async function addData(Du_lieu, table) {
+      var currentAppId = localStorage.getItem('appsheet_cfg_app_id') || YOUR_APP_ID;
+      var currentAccessKey = localStorage.getItem('appsheet_cfg_access_key') || YOUR_APPSHEET_ACCESS_KEY;
+      var customEndpoint = localStorage.getItem('appsheet_cfg_custom_endpoint');
+
+      var newRecord = Du_lieu;
+      var appsheetUrl = `https://www.appsheet.com/api/v2/apps/${currentAppId}/tables/${table}/Action`;
+      var payload = {
+        Action: 'Add',
+        Properties: {
+          Locale: 'en-US'
+        },
+        Rows: newRecord
+      };
+
+      // Đổi trạng thái nút bấm
+      const btnText = btnSubmitForm.querySelector('.btn-text');
+      const btnLoader = btnSubmitForm.querySelector('.btn-loader');
+      btnSubmitForm.disabled = true;
+      btnText.classList.add('hidden');
+      btnLoader.classList.remove('hidden');
+
+      try {
+        let response;
+        // Nếu có Webhook Google Apps Script proxy để tránh CORS
+        if (customEndpoint) {
+          response = await fetch(customEndpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify(payload)
+          });
+          const resData = await response.json();
+          if (resData.status === 'error') throw new Error(resData.message);
+          console.log("info:", resData);
+        } else {
+          // Gọi trực tiếp AppSheet API
+          var options = {
+            method: 'POST',
+            headers: {
+              'applicationAccessKey': currentAccessKey,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+          };
+          response = await fetch(appsheetUrl, options);
+          if (!response.ok) {
+            const errBody = await response.text();
+            throw new Error(`Mã lỗi ${response.status}: ${errBody}`);
+          }
+          const textRes = await response.text();
+          console.log("info:", textRes);
+        }
+
+        showToast('success', 'Gửi Thành Công!', `Bản ghi ${newRecord[0].ID} đã được lưu vào bảng "${table}".`);
+        form.reset();
+        btnClearSignature.click();
+        btnRemoveImage.click();
+        initSystemFields();
+
+      } catch (err) {
+        console.error("info error:", err);
+        if (err.name === 'TypeError' && err.message.includes('Failed to fetch')) {
+          showToast('error', 'Trình duyệt chặn CORS', 'Trình duyệt chặn request trực tiếp đến appsheet.com. Vui lòng dán link Google Apps Script Web App vào Cấu hình API!');
+        } else {
+          showToast('error', 'Lỗi gửi dữ liệu', err.message);
+        }
+      } finally {
+        btnSubmitForm.disabled = false;
+        btnText.classList.remove('hidden');
+        btnLoader.classList.add('hidden');
+      }
+    }
+
+    // Toast
+    function showToast(type, title, msg) {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = `toast toast-${type}`;
+      toast.innerHTML = `
+        <div class="toast-content">
+          <div class="toast-title">${title}</div>
+          <div class="toast-message">${msg}</div>
+        </div>
+      `;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.remove();
+      }, 4500);
+    }
+  </script>
+</body>
+</html>
